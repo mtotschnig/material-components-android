@@ -502,21 +502,24 @@ public class MaterialDatePicker<S> extends DialogFragment {
 
   private void startPickerFragment() {
     int themeResId = getThemeResId(requireContext());
-    calendar =
-        MaterialCalendar.newInstance(
-            getDateSelector(), themeResId, calendarConstraints, dayViewDecorator);
+    if (calendar == null) {
+      calendar =
+          MaterialCalendar.newInstance(
+              getDateSelector(), themeResId, calendarConstraints, dayViewDecorator);
+    }
+    if (pickerFragment == null) {
+      pickerFragment =
+          inputMode == INPUT_MODE_TEXT
+              ? MaterialTextInputPicker.newInstance(
+              getDateSelector(), themeResId, calendarConstraints)
+              : calendar;
+      updateTitle();
+      updateHeader(getHeaderText());
 
-    pickerFragment =
-        inputMode == INPUT_MODE_TEXT
-            ? MaterialTextInputPicker.newInstance(
-                getDateSelector(), themeResId, calendarConstraints)
-            : calendar;
-    updateTitle();
-    updateHeader(getHeaderText());
-
-    FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-    fragmentTransaction.replace(R.id.mtrl_calendar_frame, pickerFragment);
-    fragmentTransaction.commitNow();
+      FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+      fragmentTransaction.replace(R.id.mtrl_calendar_frame, pickerFragment);
+      fragmentTransaction.commitNow();
+    }
 
     pickerFragment.addOnSelectionChangedListener(
         new OnSelectionChangedListener<S>() {
